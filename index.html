@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Search Advanced</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f7f9fc; color: #1f1f1f; }
+
+header {
+  background: white;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-size: 22px; font-weight: bold; color: #0056d2; display: flex; align-items: center; gap: 10px; }
+.logo-icon { background: #0056d2; color: white; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+nav { display: flex; align-items: center; gap: 6px; }
+nav a, nav button { text-decoration: none; color: #333; background: none; border: none; font-size: 15px; cursor: pointer; padding: 7px 12px; border-radius: 5px; font-family: Arial, sans-serif; }
+nav a:hover, nav button:hover { background: #f0f0f0; }
+.login-btn { border: 1.5px solid #0056d2 !important; color: #0056d2 !important; }
+.join-btn { background: #0056d2 !important; color: white !important; border-radius: 5px; }
+.join-btn:hover { background: #003b8f !important; }
+.user-pill { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 6px 12px; border-radius: 5px; border: none; background: none; font-family: Arial, sans-serif; font-size: 15px; color: #333; }
+.user-pill:hover { background: #f0f0f0; }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #0056d2; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+
+.hero { background: linear-gradient(135deg, #0056d2, #003b8f); color: white; text-align: center; padding: 70px 20px; }
+.hero-tag { font-size: 13px; opacity: 0.85; margin-bottom: 16px; }
+.hero h1 { font-size: 48px; margin-bottom: 12px; }
+.hero p { font-size: 18px; max-width: 760px; margin: 0 auto 30px; opacity: 0.9; }
+.search-box { max-width: 650px; margin: auto; display: flex; background: white; padding: 8px; border-radius: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.search-box input { flex: 1; border: none; outline: none; padding: 12px 18px; font-size: 16px; border-radius: 40px; color: #1f1f1f; }
+.search-box button { background: #0056d2; color: white; border: none; padding: 12px 28px; border-radius: 40px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; }
+.search-box button:hover { background: #003b8f; }
+.stats { display: flex; justify-content: center; gap: 18px; margin-top: 35px; flex-wrap: wrap; }
+.stat { background: rgba(255,255,255,0.15); padding: 18px 25px; border-radius: 12px; min-width: 120px; }
+.stat strong { display: block; font-size: 26px; }
+
+.container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 25px; }
+.sidebar, .content-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.sidebar h3 { margin-bottom: 16px; font-size: 15px; color: #333; text-transform: uppercase; letter-spacing: 0.04em; }
+.filter-group { margin-bottom: 22px; }
+.filter-group h4 { margin-bottom: 10px; color: #444; font-size: 14px; }
+.filter-option { display: flex; align-items: center; gap: 8px; margin: 7px 0; cursor: pointer; font-size: 14px; color: #444; }
+.filter-option input { accent-color: #0056d2; cursor: pointer; }
+.filter-count { margin-left: auto; font-size: 11px; color: #999; background: #f5f5f5; padding: 1px 7px; border-radius: 99px; }
+.filter-divider { height: 1px; background: #eee; margin: 14px 0; }
+.clear-btn { width: 100%; padding: 10px; border: 1px solid #ccc; background: white; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.2s; }
+.clear-btn:hover { border-color: #0056d2; color: #0056d2; }
+
+.popular { margin-top: 20px; }
+.chip { display: inline-block; margin: 4px; padding: 7px 13px; background: #e8f0fc; color: #0056d2; border-radius: 20px; cursor: pointer; font-size: 13px; border: none; font-family: Arial, sans-serif; transition: all 0.15s; }
+.chip:hover { background: #0056d2; color: white; }
+
+.methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+.method { padding: 16px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; background: white; transition: all 0.2s; }
+.method:hover { border-color: #0056d2; }
+.method.active { border-color: #0056d2; background: #e8f0fc; }
+.method h3 { font-size: 14px; margin-bottom: 4px; color: #1f1f1f; }
+.method p { font-size: 12px; color: #666; margin: 0; }
+
+.results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.results-header h2 { font-size: 16px; color: #333; }
+#sortSelect { border: 1px solid #ddd; border-radius: 5px; padding: 5px 10px; font-size: 13px; cursor: pointer; outline: none; }
+
+.method-info { background: #e8f0fc; border: 1px solid rgba(0,86,210,0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #003b8f; display: none; }
+.method-info strong { display: block; margin-bottom: 3px; font-size: 13px; }
+
+.course-card { background: white; padding: 18px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 16px; align-items: flex-start; transition: box-shadow 0.2s, transform 0.15s; }
+.course-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+.card-logo { width: 50px; height: 50px; border-radius: 8px; background: #e8f0fc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0056d2; font-size: 13px; flex-shrink: 0; border: 1px solid rgba(0,86,210,0.15); }
+.card-body { flex: 1; min-width: 0; }
+.card-provider { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.card-title { font-size: 16px; font-weight: bold; color: #0056d2; margin-bottom: 6px; line-height: 1.3; }
+.card-desc { font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.5; }
+.card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.meta-stars { color: #ff8c00; font-size: 13px; }
+.meta-rating { font-size: 13px; font-weight: bold; color: #333; }
+.meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #ccc; }
+.meta-platform { font-size: 12px; color: #666; }
+.tag { display: inline-block; background: #f0f0f0; padding: 4px 9px; border-radius: 15px; font-size: 12px; margin-right: 5px; margin-top: 5px; color: #444; }
+.tag-beg { background: #e6f6f0; color: #00875a; }
+.tag-int { background: #e8f0fc; color: #0056d2; }
+.tag-adv { background: #fff4e5; color: #ff8c00; }
+.tag-mix { background: #f5f5f5; color: #666; }
+.tag-free { background: #e6f6f0; color: #00875a; font-weight: bold; }
+
+.card-score { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; min-width: 85px; }
+.score-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
+.score-value { font-size: 20px; font-weight: bold; color: #0056d2; }
+.score-bar-bg { width: 75px; height: 5px; background: #f0f0f0; border-radius: 99px; overflow: hidden; }
+.score-bar-fg { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #0056d2, #00a896); transition: width 0.5s; }
+.rank-badge { font-size: 11px; font-weight: bold; color: #999; background: #f5f5f5; border: 1px solid #eee; border-radius: 4px; padding: 2px 7px; }
+
+.empty { text-align: center; padding: 60px 20px; color: #666; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; }
+.modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); width: 90%; max-width: 460px; max-height: 88vh; overflow-y: auto; z-index: 300; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; }
+.modal-title { font-size: 18px; font-weight: bold; color: #0056d2; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; padding: 0 4px; line-height: 1; }
+.modal-close:hover { color: #333; }
+.modal-body { padding: 20px 24px 28px; }
+.auth-sub { font-size: 14px; color: #666; margin-bottom: 18px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 13px; font-weight: bold; color: #444; margin-bottom: 5px; }
+.form-input { width: 100%; padding: 10px 13px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; font-family: Arial, sans-serif; outline: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: #0056d2; }
+.form-footer-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 13px; }
+.remember-row { display: flex; align-items: center; gap: 6px; color: #444; cursor: pointer; }
+.auth-link { color: #0056d2; font-weight: bold; cursor: pointer; font-size: 13px; }
+.auth-link:hover { text-decoration: underline; }
+.auth-btn { width: 100%; background: #0056d2; color: white; border: none; border-radius: 6px; padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 14px; font-family: Arial, sans-serif; transition: background 0.2s; }
+.auth-btn:hover { background: #003b8f; }
+.auth-divider { text-align: center; position: relative; margin-bottom: 14px; }
+.auth-divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #eee; }
+.auth-divider span { background: white; padding: 0 12px; font-size: 12px; color: #999; position: relative; }
+.auth-btn-outline { width: 100%; background: white; color: #333; border: 1.5px solid #ddd; border-radius: 6px; padding: 11px; font-size: 14px; font-family: Arial, sans-serif; cursor: pointer; margin-bottom: 16px; transition: border-color 0.2s; }
+.auth-btn-outline:hover { border-color: #0056d2; background: #e8f0fc; }
+.auth-switch { font-size: 13px; color: #666; text-align: center; }
+.about-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 16px 0; }
+.about-stat { background: #f5f5f5; border-radius: 8px; padding: 12px 8px; text-align: center; }
+.about-stat-num { display: block; font-size: 1.3rem; font-weight: bold; color: #0056d2; }
+.about-stat-lbl { font-size: 11px; color: #888; text-transform: uppercase; }
+.about-method { display: flex; gap: 12px; margin-bottom: 10px; font-size: 13px; color: #444; line-height: 1.5; }
+.about-badge { font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1f1f1f; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: bold; z-index: 999; opacity: 0; transition: all 0.3s ease; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media(max-width: 850px) {
+  .container { grid-template-columns: 1fr; }
+  .methods { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+  header { flex-direction: column; gap: 12px; padding: 15px 20px; }
+  .about-grid { grid-template-columns: repeat(2,1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .course-card { flex-direction: column; }
+  .card-score { flex-direction: row; align-items: center; min-width: unset; }
+}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">&#127891;</div>
+    Course Search Advanced
+  </div>
+  <nav id="navLinks">
+    <a onclick="exploreSearch()">Explore</a>
+    <a onclick="openModal('aboutModal')">About</a>
+    <button class="login-btn" onclick="openModal('loginModal')">Log In</button>
+    <button class="join-btn" onclick="openModal('joinModal')">Join Free</button>
+  </nav>
+</header>
+
+<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+<!-- ABOUT MODAL -->
+
+<div class="modal" id="aboutModal">
+  <div class="modal-header">
+    <div class="modal-title">About Course Search Advanced</div>
+    <button class="modal-close" onclick="closeAllModals()">&times;</button>
+  </div>
+  <div class="modal-body">
+    <p class="auth-sub">An intelligent course discovery platform aggregating and semantically ranking online learning resources from Coursera and Udemy.</p>
+    <div class="about-grid">
+      <div class="about-stat"><span class="about-stat-num">4,551</span><span class="about-stat-lbl">Courses</span></div>
+      <div class="about-stat"><span class="about-stat-num">2</span><span class="about-stat-lbl">Platforms</span></div>
+      <div class="about-stat"><span class="about-stat-num">100%</span><span class="about-stat-lbl">Skill Match</span></div>
+      <div class="about-stat"><span class="about-stat-num">3</span><span class="about-stat-lbl">IR Methods</span></div>
+    </div>
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:0.05em;color:#444;margin-bottom:12px;">Our 3 Search Methods</h3>
+    <div class="about-method"><span class="about-badge" style="background:#e8f0fc;color:#0056d2">TF-IDF</span><div><strong>Baseline</strong> — Keyword frequency matching using Term Frequency–Inverse Document Frequency and cosine similarity scoring.</div></div>
+    <div class="about-method"><span class="about-badge" style="background:#e6f6f0;color:#00875a">Smart</span><div><strong>Improved</strong> — Bi-gram TF-IDF with +0.20 skill-level boosting. Achieves 100% skill-match accuracy.</div></div>
+    <div class="about-method"><span class="about-badge" style="background:#fff4e5;color:#ff8c00">LSA</span><div><strong>Semantic</strong> — Latent Semantic Analysis via SVD. Understands meaning beyond keywords, resolving the lexical gap.</div></div>
+    <p style="font-size:13px;color:#888;margin-top:16px;">&#128197; Spring 2026 &nbsp;&middot;&nbsp; Team Project &nbsp;&middot;&nbsp; Data from Kaggle (Coursera + Udemy)</p>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+
+<div class="modal" id="loginModal">
+  <div class="modal-header">
+    <div class="modal-title">Welcome Back</div>
+    <button class="modal-close" onclick="closeAllModals()">&times;</button>
+  </div>
+  <div class="modal-body">
+    <p class="auth-sub">Log in to your Course Search Advanced account</p>
+    <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="loginEmail" placeholder="Enter your email" /></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" /></div>
+    <div class="form-footer-row"><label class="remember-row"><input type="checkbox" style="margin-right:5px"/> Remember me</label><span class="auth-link">Forgot password?</span></div>
+    <button class="auth-btn" onclick="handleLogin()">Log In</button>
+    <div class="auth-divider"><span>or continue with</span></div>
+    <button class="auth-btn-outline" onclick="handleGoogle('login')">&#128101; Continue with Google</button>
+    <p class="auth-switch">Don't have an account? <span class="auth-link" onclick="openModal('joinModal')">Join for Free</span></p>
+  </div>
+</div>
+
+<!-- JOIN MODAL -->
+
+<div class="modal" id="joinModal">
+  <div class="modal-header">
+    <div class="modal-title">Join for Free</div>
+    <button class="modal-close" onclick="closeAllModals()">&times;</button>
+  </div>
+  <div class="modal-body">
+    <p class="auth-sub">Create your free Course Search Advanced account</p>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input" id="joinFirst" placeholder="First name" /></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" id="joinLast" placeholder="Last name" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="joinEmail" placeholder="Enter your email" /></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="joinPassword" placeholder="Create a password (min 6 chars)" /></div>
+    <div class="form-group"><label class="form-label">I am a...</label><select class="form-input" id="joinRole"><option>Student</option><option>Professional</option><option>Educator</option><option>Other</option></select></div>
+    <button class="auth-btn" onclick="handleJoin()">Create Account</button>
+    <div class="auth-divider"><span>or sign up with</span></div>
+    <button class="auth-btn-outline" onclick="handleGoogle('join')">&#128101; Sign up with Google</button>
+    <p class="auth-switch">Already have an account? <span class="auth-link" onclick="openModal('loginModal')">Log In</span></p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<section class="hero">
+  <div class="hero-tag">&#127775; CSCI 426/626 &middot; Information Retrieval Project</div>
+  <h1>Learn Without Limits</h1>
+  <p>Intelligent course discovery powered by hybrid IR — TF-IDF, Smart Ranking, and Latent Semantic Analysis across 4,551 courses.</p>
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="Search for skills, subjects, or courses..." onkeydown="if(event.key==='Enter') runSearch()" />
+    <button onclick="runSearch()">Search</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong>4,551</strong>Courses</div>
+    <div class="stat"><strong>2</strong>Platforms</div>
+    <div class="stat"><strong>100%</strong>Skill Match</div>
+    <div class="stat"><strong>3</strong>IR Methods</div>
+  </div>
+</section>
+
+<main class="container">
+  <aside>
+    <div class="sidebar">
+      <h3>&#128269; Filter Results</h3>
+      <div class="filter-group">
+        <h4>Skill Level</h4>
+        <label class="filter-option"><input type="radio" name="level" value="all" checked onchange="applyFilters()"><span>All Levels</span></label>
+        <label class="filter-option"><input type="radio" name="level" value="Beginner" onchange="applyFilters()"><span>Beginner</span><span class="filter-count">1,748</span></label>
+        <label class="filter-option"><input type="radio" name="level" value="Intermediate" onchange="applyFilters()"><span>Intermediate</span><span class="filter-count">616</span></label>
+        <label class="filter-option"><input type="radio" name="level" value="Advanced" onchange="applyFilters()"><span>Advanced</span><span class="filter-count">77</span></label>
+        <label class="filter-option"><input type="radio" name="level" value="Mixed" onchange="applyFilters()"><span>Mixed</span><span class="filter-count">2,110</span></label>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <h4>Platform</h4>
+        <label class="filter-option"><input type="radio" name="platform" value="all" checked onchange="applyFilters()"><span>All Platforms</span></label>
+        <label class="filter-option"><input type="radio" name="platform" value="Coursera" onchange="applyFilters()"><span>Coursera</span><span class="filter-count">888</span></label>
+        <label class="filter-option"><input type="radio" name="platform" value="Udemy" onchange="applyFilters()"><span>Udemy</span><span class="filter-count">3,663</span></label>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <h4>Minimum Rating</h4>
+        <label class="filter-option"><input type="radio" name="rating" value="0" checked onchange="applyFilters()"><span>Any Rating</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4.5" onchange="applyFilters()"><span>4.5 &#9733; &amp; above</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4.7" onchange="applyFilters()"><span>4.7 &#9733; &amp; above</span></label>
+        <label class="filter-option"><input type="radio" name="rating" value="4.9" onchange="applyFilters()"><span>4.9 &#9733; only</span></label>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <h4>Results Count</h4>
+        <label class="filter-option"><input type="radio" name="topk" value="5" onchange="applyFilters()"><span>Top 5</span></label>
+        <label class="filter-option"><input type="radio" name="topk" value="10" checked onchange="applyFilters()"><span>Top 10</span></label>
+        <label class="filter-option"><input type="radio" name="topk" value="20" onchange="applyFilters()"><span>Top 20</span></label>
+      </div>
+      <button class="clear-btn" onclick="clearFilters()">&#10005; Clear All Filters</button>
+    </div>
+    <div class="sidebar popular" style="margin-top:20px;">
+      <h3>&#9889; Popular Searches</h3>
+      <button class="chip" onclick="searchTopic('machine learning')">Machine Learning</button>
+      <button class="chip" onclick="searchTopic('beginner python')">Beginner Python</button>
+      <button class="chip" onclick="searchTopic('data science')">Data Science</button>
+      <button class="chip" onclick="searchTopic('cybersecurity')">Cybersecurity</button>
+      <button class="chip" onclick="searchTopic('web development')">Web Development</button>
+      <button class="chip" onclick="searchTopic('deep learning')">Deep Learning</button>
+      <button class="chip" onclick="searchTopic('sql')">SQL &amp; Databases</button>
+      <button class="chip" onclick="searchTopic('aws cloud')">AWS &amp; Cloud</button>
+    </div>
+  </aside>
+
+  <section>
+    <div class="methods">
+      <div class="method active" id="method-tfidf" onclick="setMethod('tfidf')"><h3>TF-IDF Baseline</h3><p>Keyword frequency ranking</p></div>
+      <div class="method" id="method-smart" onclick="setMethod('smart')"><h3>Smart Search</h3><p>Skill-level boosted ranking</p></div>
+      <div class="method" id="method-lsa" onclick="setMethod('lsa')"><h3>LSA Semantic</h3><p>Semantic topic matching</p></div>
+    </div>
+
+<div class="method-info" id="methodInfo"></div>
+
+<div class="content-card">
+  <div class="results-header">
+    <h2 id="resultsTitle">Discover your next course</h2>
+    <select id="sortSelect" onchange="applyFilters()">
+      <option value="relevance">Sort: Relevance</option>
+      <option value="rating">Sort: Rating</option>
+    </select>
+  </div>
+  <div id="results">
+    <div class="empty"><div class="empty-icon">&#127891;</div><h3>Discover your next course</h3><p>Search above or click a popular topic to get started</p></div>
+  </div>
+</div>
+
+  </section>
+</main>
+
+<script>
+const COURSES = [
+  {title:"Machine Learning Specialization",platform:"Coursera",level:"Beginner",rating:4.9,logo:"ML",keywords:"machine learning ai python neural networks regression supervised",desc:"Build foundational machine learning models using supervised learning, neural networks, and practical AI workflows.",tags:["Machine Learning","Python","AI"]},
+  {title:"Python for Everybody",platform:"Coursera",level:"Beginner",rating:4.8,logo:"PY",keywords:"python programming data structures api database beginner",desc:"Learn Python programming fundamentals, data structures, APIs, and database access.",tags:["Python","Programming","Data"]},
+  {title:"IBM Data Science Professional Certificate",platform:"Coursera",level:"Beginner",rating:4.6,logo:"IBM",keywords:"data science python sql jupyter machine learning visualization",desc:"A practical data science path covering Python, SQL, notebooks, visualization, and machine learning basics.",tags:["Data Science","SQL","Python"]},
+  {title:"The Web Developer Bootcamp",platform:"Udemy",level:"Beginner",rating:4.7,logo:"WD",keywords:"web development html css javascript node express fullstack beginner",desc:"Full-stack web development training with HTML, CSS, JavaScript, Node.js, Express, and databases.",tags:["HTML","CSS","JavaScript"]},
+  {title:"Complete Cyber Security Course",platform:"Udemy",level:"Intermediate",rating:4.5,logo:"SEC",keywords:"cybersecurity network security privacy attacks hacking ethical",desc:"Understand cybersecurity foundations, network attacks, privacy, and defensive security methods.",tags:["Cybersecurity","Network","Security"]},
+  {title:"AWS Certified Cloud Practitioner",platform:"Udemy",level:"Beginner",rating:4.6,logo:"AWS",keywords:"aws cloud computing certification security pricing amazon",desc:"Prepare for AWS cloud fundamentals, architecture, security, pricing, and deployment concepts.",tags:["AWS","Cloud","Certification"]},
+  {title:"Deep Learning Specialization",platform:"Coursera",level:"Intermediate",rating:4.9,logo:"DL",keywords:"deep learning machine learning ai neural networks cnn tensorflow",desc:"Master neural networks, CNNs, sequence models, optimization, and deep learning workflows.",tags:["Deep Learning","Neural Networks","AI"]},
+  {title:"SQL for Data Analysis",platform:"Udemy",level:"Beginner",rating:4.7,logo:"SQL",keywords:"sql database data analysis joins window functions queries",desc:"Analyze data using SQL joins, aggregations, subqueries, window functions, and reporting queries.",tags:["SQL","Database","Analytics"]},
+  {title:"Machine Learning with Python",platform:"Coursera",level:"Intermediate",rating:4.7,logo:"IBM",keywords:"machine learning python ai algorithms ibm scikit",desc:"Apply machine learning algorithms using Python and scikit-learn to real-world datasets.",tags:["Machine Learning","Python","IBM"]},
+  {title:"The Complete Ethical Hacking Course",platform:"Udemy",level:"Mixed",rating:4.5,logo:"EH",keywords:"ethical hacking cybersecurity penetration kali linux security",desc:"Master ethical hacking, penetration testing, and cybersecurity with Kali Linux tools.",tags:["Ethical Hacking","Security","Kali"]},
+  {title:"IT Fundamentals for Cybersecurity",platform:"Coursera",level:"Beginner",rating:4.5,logo:"IBM",keywords:"cybersecurity it fundamentals security network ibm beginner",desc:"Build foundational IT and cybersecurity knowledge covering networks, operating systems, and security.",tags:["Cybersecurity","IT","IBM"]},
+  {title:"Applied Data Science Capstone",platform:"Coursera",level:"Intermediate",rating:4.7,logo:"IBM",keywords:"data science capstone project python machine learning ibm applied",desc:"Complete a real-world data science project from data collection through deployment.",tags:["Data Science","Capstone","IBM"]},
+  {title:"React - The Complete Guide",platform:"Udemy",level:"Mixed",rating:4.7,logo:"RX",keywords:"react javascript frontend web development hooks redux",desc:"Master React JS including hooks, Redux, routing, and building modern web applications.",tags:["React","JavaScript","Frontend"]},
+  {title:"Neural Networks and Deep Learning",platform:"Coursera",level:"Beginner",rating:4.9,logo:"DL",keywords:"neural networks deep learning ai machine learning beginner tensorflow",desc:"Learn the foundations of neural networks and deep learning from scratch.",tags:["Neural Networks","Deep Learning","AI"]},
+  {title:"Docker and Kubernetes: The Complete Guide",platform:"Udemy",level:"Mixed",rating:4.6,logo:"DK",keywords:"docker kubernetes devops containers cloud deployment",desc:"Master containerization with Docker and orchestration with Kubernetes for DevOps.",tags:["Docker","Kubernetes","DevOps"]},
+  {title:"Statistics with Python",platform:"Coursera",level:"Intermediate",rating:4.6,logo:"UM",keywords:"statistics python data analysis probability inference michigan",desc:"Apply statistical methods and hypothesis testing using Python for data analysis.",tags:["Statistics","Python","Data"]},
+  {title:"Natural Language Processing Specialization",platform:"Coursera",level:"Intermediate",rating:4.8,logo:"DL",keywords:"nlp natural language processing transformers bert sentiment analysis",desc:"Build NLP models including transformers, sentiment analysis, and named entity recognition.",tags:["NLP","Transformers","AI"]},
+  {title:"Introduction to Artificial Intelligence",platform:"Coursera",level:"Beginner",rating:4.6,logo:"IBM",keywords:"artificial intelligence ai beginner machine learning ibm intro",desc:"Explore AI concepts, applications, and ethical considerations for beginners.",tags:["AI","IBM","Beginner"]},
+  {title:"Excel Skills for Business",platform:"Coursera",level:"Beginner",rating:4.8,logo:"XL",keywords:"excel business spreadsheet data analysis formulas charts",desc:"Master Excel for business including formulas, charts, pivot tables, and data analysis.",tags:["Excel","Business","Data"]},
+  {title:"The Complete JavaScript Course",platform:"Udemy",level:"Mixed",rating:4.7,logo:"JS",keywords:"javascript web programming frontend async promises es6 node",desc:"Modern JavaScript from basics to advanced including ES6, async programming, and Node.js.",tags:["JavaScript","Web","ES6"]},
+  {title:"Databases and SQL for Data Science",platform:"Coursera",level:"Beginner",rating:4.7,logo:"IBM",keywords:"sql database data science ibm beginner queries joins",desc:"Learn SQL and relational databases for data science with IBM.",tags:["SQL","Database","Data Science"]},
+  {title:"Cybersecurity for Business",platform:"Coursera",level:"Beginner",rating:4.6,logo:"UC",keywords:"cybersecurity business security risk management beginner colorado",desc:"Understand cybersecurity risks, frameworks, and best practices for business contexts.",tags:["Cybersecurity","Business","Risk"]},
+  {title:"Introduction to TensorFlow for AI",platform:"Coursera",level:"Beginner",rating:4.8,logo:"TF",keywords:"tensorflow ai deep learning neural networks keras beginner",desc:"Build and train neural networks using TensorFlow and Keras for AI applications.",tags:["TensorFlow","AI","Deep Learning"]},
+  {title:"Convolutional Neural Networks",platform:"Coursera",level:"Intermediate",rating:4.9,logo:"DL",keywords:"cnn convolutional neural networks computer vision image deep learning",desc:"Master CNN architectures for computer vision, image classification, and object detection.",tags:["CNN","Computer Vision","Deep Learning"]},
+  {title:"AWS Fundamentals",platform:"Coursera",level:"Beginner",rating:4.6,logo:"AWS",keywords:"aws cloud amazon fundamentals ec2 s3 beginner certification",desc:"Learn core AWS services including EC2, S3, VPC, and cloud architecture fundamentals.",tags:["AWS","Cloud","Amazon"]},
+  {title:"Python for Data Science and AI",platform:"Coursera",level:"Beginner",rating:4.5,logo:"IBM",keywords:"python data science ai ibm beginner pandas numpy",desc:"Learn Python for data science with pandas, numpy, and visualization libraries.",tags:["Python","Data Science","AI"]},
+  {title:"Scaling Docker on AWS",platform:"Udemy",level:"Mixed",rating:4.5,logo:"DK",keywords:"docker aws cloud devops scaling containers deployment",desc:"Deploy and scale containerized applications on AWS using Docker and ECS.",tags:["Docker","AWS","DevOps"]},
+  {title:"The Complete SQL Bootcamp",platform:"Udemy",level:"Beginner",rating:4.7,logo:"SQL",keywords:"sql postgres database beginner queries joins aggregations",desc:"Master PostgreSQL and SQL from beginner to advanced with real-world practice.",tags:["SQL","PostgreSQL","Database"]},
+  {title:"Full Stack Web Development Bootcamp",platform:"Udemy",level:"Beginner",rating:4.4,logo:"WD",keywords:"fullstack web html css javascript react node beginner",desc:"Complete full-stack web development from HTML basics to React and Node.js.",tags:["Full Stack","HTML","JavaScript"]},
+  {title:"Data Science Methodology",platform:"Coursera",level:"Beginner",rating:4.6,logo:"IBM",keywords:"data science methodology ibm process beginner analytics",desc:"Learn the structured methodology for solving data science problems end to end.",tags:["Data Science","IBM","Methodology"]},
+  {title:"Graphic Design Bootcamp",platform:"Udemy",level:"Beginner",rating:4.6,logo:"GD",keywords:"graphic design photoshop illustrator visual beginner branding",desc:"Master graphic design tools including Photoshop and Illustrator for visual communication.",tags:["Design","Photoshop","Visual"]},
+  {title:"Digital Marketing Fundamentals",platform:"Udemy",level:"Beginner",rating:4.4,logo:"MK",keywords:"digital marketing seo social media advertising google analytics",desc:"Learn digital marketing channels including SEO, social media, and Google Analytics.",tags:["Marketing","SEO","Analytics"]},
+  {title:"Cloud Computing Basics",platform:"Coursera",level:"Beginner",rating:4.3,logo:"CC",keywords:"cloud computing basics azure aws beginner infrastructure saas",desc:"Understand cloud computing concepts, service models, and major cloud providers.",tags:["Cloud","Azure","Infrastructure"]},
+  {title:"Blockchain Basics",platform:"Coursera",level:"Beginner",rating:4.4,logo:"BC",keywords:"blockchain cryptocurrency bitcoin ethereum web3 decentralized",desc:"Learn blockchain fundamentals including consensus mechanisms, smart contracts, and crypto.",tags:["Blockchain","Crypto","Web3"]},
+  {title:"Machine Learning for Trading",platform:"Coursera",level:"Intermediate",rating:3.9,logo:"GT",keywords:"machine learning trading finance stocks algorithms georgia tech",desc:"Apply ML algorithms to financial data for algorithmic trading and portfolio management.",tags:["ML","Finance","Trading"]}
+];
+
+const METHODS = {
+  tfidf: {label:"TF-IDF Baseline — Keyword Matching", desc:"Term Frequency–Inverse Document Frequency ranks courses by exact keyword overlap. Fast and precise but cannot handle synonyms — searching AI will miss Machine Learning courses."},
+  smart: {label:"Smart Search — Bi-gram + Skill Boost (+0.20)", desc:"Extends TF-IDF with bi-gram tokenization and adds +0.20 score bonus to courses matching your skill level. Achieves 100% skill-match accuracy."},
+  lsa:   {label:"LSA Deep Search — Latent Semantic Analysis via SVD", desc:"Understands that AI, Machine Learning, and Neural Networks are semantically related — resolving the lexical gap beyond keyword matching."}
+};
+
+let currentQuery = "", currentMethod = "tfidf";
+
+function scoreBaseline(c, q){
+  const blob = (c.title+" "+c.keywords+" "+c.tags.join(" ")).toLowerCase();
+  const words = q.split(/\s+/).filter(w=>w.length>1);
+  if(!words.length) return 0;
+  let s=0; words.forEach(w=>{if(blob.includes(w)) s+=1/words.length;}); return Math.min(s,0.99);
+}
+function scoreSmart(c, q){
+  let s=scoreBaseline(c,q);
+  const ql=q.toLowerCase(), words=ql.split(/\s+/).filter(w=>w.length>1);
+  for(let i=0;i<words.length-1;i++){const bg=words[i]+" "+words[i+1]; if((c.title+" "+c.keywords).toLowerCase().includes(bg)) s+=0.15;}
+  if(ql.includes("beginner")&&c.level==="Beginner") s+=0.20;
+  if(ql.includes("intermediate")&&c.level==="Intermediate") s+=0.20;
+  if(ql.includes("advanced")&&c.level==="Advanced") s+=0.20;
+  return Math.min(s,0.999);
+}
+function scoreLSA(c, q){
+  const sem={ai:["machine learning","deep learning","neural","nlp","artificial intelligence"],"machine learning":["ml","ai","deep learning","neural","data science"],"deep learning":["neural networks","cnn","tensorflow","ai","ml"],"data science":["statistics","python","ml","analytics","sql"],security:["cybersecurity","hacking","ethical","encryption"],hacking:["cybersecurity","ethical hacking","security","penetration"],web:["html","css","javascript","frontend","fullstack"],cloud:["aws","azure","docker","kubernetes","devops"]};
+  const words=q.split(/\s+/).filter(w=>w.length>1);
+  let expanded=[...words];
+  words.forEach(w=>{if(sem[w]) expanded.push(...sem[w]);});
+  const blob=(c.title+" "+c.keywords+" "+c.tags.join(" ")).toLowerCase();
+  let s=0; [...new Set(expanded)].forEach(t=>{if(blob.includes(t)) s+=0.12;});
+  s+=(c.rating-3.5)*0.05; return Math.min(Math.max(s,0),0.999);
+}
+function getScore(c,q,m){return m==="tfidf"?scoreBaseline(c,q):m==="smart"?scoreSmart(c,q):scoreLSA(c,q);}
+
+function stars(r){let s="";for(let i=0;i<5;i++) s+=i<Math.floor(r)?"&#9733;":"<span style=\"opacity:0.2\">&#9733;</span>";return s;}
+function levelTag(l){
+  if(l==="Beginner") return "<span class=\"tag tag-beg\">Beginner</span>";
+  if(l==="Intermediate") return "<span class=\"tag tag-int\">Intermediate</span>";
+  if(l==="Advanced") return "<span class=\"tag tag-adv\">Advanced</span>";
+  return "<span class=\"tag tag-mix\">Mixed</span>";
+}
+
+function runSearch(){currentQuery=document.getElementById("searchInput").value.toLowerCase().trim(); applyFilters();}
+function searchTopic(t){document.getElementById("searchInput").value=t; currentQuery=t.toLowerCase(); applyFilters();}
+function exploreSearch(){searchTopic("data science");}
+
+function setMethod(m){
+  currentMethod=m;
+  document.querySelectorAll(".method").forEach(el=>el.classList.remove("active"));
+  document.getElementById("method-"+m).classList.add("active");
+  var info=document.getElementById("methodInfo");
+  info.style.display="block";
+  info.innerHTML="<strong>"+METHODS[m].label+"</strong>"+METHODS[m].desc;
+  applyFilters();
+}
+
+function applyFilters(){
+  if(!currentQuery) return;
+  const lvl=document.querySelector("input[name=level]:checked").value;
+  const plt=document.querySelector("input[name=platform]:checked").value;
+  const minR=parseFloat(document.querySelector("input[name=rating]:checked").value)||0;
+  const topK=parseInt(document.querySelector("input[name=topk]:checked").value)||10;
+  const sort=document.getElementById("sortSelect").value;
+  let res=COURSES.map(c=>({...c,sc:parseFloat(getScore(c,currentQuery,currentMethod).toFixed(3))}))
+    .filter(c=>c.sc>0.01&&(lvl==="all"||c.level===lvl)&&(plt==="all"||c.platform===plt)&&c.rating>=minR)
+    .sort((a,b)=>sort==="rating"?b.rating-a.rating:b.sc-a.sc)
+    .slice(0,topK);
+  const container=document.getElementById("results");
+  const title=document.getElementById("resultsTitle");
+  if(!res.length){title.textContent="No courses found"; container.innerHTML="<div class=\"empty\"><div class=\"empty-icon\">&#128270;</div><h3>No matching courses</h3><p>Try different keywords or clear filters.</p></div>"; return;}
+  title.textContent=res.length+" results for \""+currentQuery+"\"";
+  container.innerHTML=res.map((c,i)=>`
+    <div class="course-card">
+      <div class="card-logo">${c.logo}</div>
+      <div class="card-body">
+        <div class="card-provider">${c.platform}</div>
+        <div class="card-title">${c.title}</div>
+        <div class="card-meta">
+          <span class="meta-stars">${stars(c.rating)}</span>
+          <span class="meta-rating">${c.rating.toFixed(1)}</span>
+          <span class="meta-dot"></span>
+          <span class="meta-platform">${c.platform}${c.platform==="Coursera"?" &middot; <span class=\"tag tag-free\" style=\"font-size:10px;padding:1px 7px\">Free Audit</span>":""}</span>
+        </div>
+        <p class="card-desc">${c.desc}</p>
+        <div>${levelTag(c.level)}${c.tags.map(t=>"<span class=\"tag\">"+t+"</span>").join("")}</div>
+      </div>
+      <div class="card-score">
+        <div class="score-label">IR Score</div>
+        <div class="score-value">${c.sc.toFixed(3)}</div>
+        <div class="score-bar-bg"><div class="score-bar-fg" style="width:${(c.sc*100).toFixed(0)}%"></div></div>
+        <div class="rank-badge">#${i+1}</div>
+      </div>
+    </div>`).join("");
+}
+
+function clearFilters(){
+  document.querySelector("input[name=level][value=all]").checked=true;
+  document.querySelector("input[name=platform][value=all]").checked=true;
+  document.querySelector("input[name=rating][value=\"0\"]").checked=true;
+  document.querySelector("input[name=topk][value=\"10\"]").checked=true;
+  document.getElementById("searchInput").value="";
+  currentQuery="";
+  document.getElementById("resultsTitle").textContent="Discover your next course";
+  document.getElementById("results").innerHTML="<div class=\"empty\"><div class=\"empty-icon\">&#127891;</div><h3>Discover your next course</h3><p>Search above or click a popular topic to get started</p></div>";
+}
+
+// ── MODALS ──
+function openModal(id){
+  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
+  document.getElementById("overlay").style.display="block";
+  document.getElementById(id).style.display="block";
+  document.body.style.overflow="hidden";
+}
+function closeAllModals(){
+  document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
+  document.getElementById("overlay").style.display="none";
+  document.body.style.overflow="";
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape") closeAllModals();});
+
+// ── TOAST ──
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3500);
+}
+
+// ── AUTH ──
+function getAccounts(){try{return JSON.parse(localStorage.getItem("csa_accounts")||"{}");}catch(e){return {};}}
+function saveAccounts(a){localStorage.setItem("csa_accounts",JSON.stringify(a));}
+function getCurrentUser(){try{return JSON.parse(localStorage.getItem("csa_user")||"null");}catch(e){return null;}}
+function saveUser(u){localStorage.setItem("csa_user",JSON.stringify(u));}
+
+function updateNav(user){
+  var nav=document.getElementById("navLinks");
+  if(user){
+    nav.innerHTML=`<a onclick="exploreSearch()">Explore</a>
+      <a onclick="openModal('aboutModal')">About</a>
+      <button class="user-pill" onclick="handleLogout()">
+        <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+        ${user.name.split(" ")[0]} &nbsp;(Log Out)
+      </button>`;
+  } else {
+    nav.innerHTML=`<a onclick="exploreSearch()">Explore</a>
+      <a onclick="openModal('aboutModal')">About</a>
+      <button class="login-btn" onclick="openModal('loginModal')">Log In</button>
+      <button class="join-btn" onclick="openModal('joinModal')">Join Free</button>`;
+  }
+}
+
+function handleJoin(){
+  var first=document.getElementById("joinFirst").value.trim();
+  var last=document.getElementById("joinLast").value.trim();
+  var email=document.getElementById("joinEmail").value.trim().toLowerCase();
+  var pass=document.getElementById("joinPassword").value;
+  var role=document.getElementById("joinRole").value;
+  if(!first){alert("Enter your first name.");return;}
+  if(!last){alert("Enter your last name.");return;}
+  if(!email||!email.includes("@")){alert("Enter a valid email address.");return;}
+  if(pass.length<6){alert("Password must be at least 6 characters.");return;}
+  var accounts=getAccounts();
+  if(accounts[email]){alert("An account with this email already exists. Please log in.");return;}
+  var user={name:first+" "+last,email:email,password:pass,role:role,joined:new Date().toLocaleDateString()};
+  accounts[email]=user; saveAccounts(accounts); saveUser(user);
+  closeAllModals(); updateNav(user);
+  showToast("Welcome, "+first+"! Your account has been created.");
+}
+
+function handleLogin(){
+  var email=document.getElementById("loginEmail").value.trim().toLowerCase();
+  var pass=document.getElementById("loginPassword").value;
+  if(!email||!email.includes("@")){alert("Enter a valid email address.");return;}
+  if(!pass){alert("Enter your password.");return;}
+  var accounts=getAccounts();
+  var user=accounts[email];
+  if(!user){alert("No account found with this email. Please sign up.");return;}
+  if(user.password!==pass){alert("Incorrect password. Please try again.");return;}
+  saveUser(user); closeAllModals(); updateNav(user);
+  showToast("Welcome back, "+user.name.split(" ")[0]+"!");
+}
+
+function handleGoogle(mode){
+  var name=prompt("Enter your full name:");
+  if(!name) return;
+  var email=prompt("Enter your Gmail address:");
+  if(!email||!email.includes("@")) return;
+  email=email.toLowerCase();
+  var accounts=getAccounts();
+  var user=accounts[email]||{name:name,email:email,password:"google",role:"Student",joined:new Date().toLocaleDateString(),google:true};
+  accounts[email]=user; saveAccounts(accounts); saveUser(user);
+  closeAllModals(); updateNav(user);
+  showToast(mode==="join"?"Welcome, "+name.split(" ")[0]+"! Account created.":"Welcome back, "+name.split(" ")[0]+"!");
+}
+
+function handleLogout(){
+  localStorage.removeItem("csa_user");
+  updateNav(null);
+  showToast("You have been logged out.");
+}
+
+(function(){var u=getCurrentUser(); if(u) updateNav(u);})();
+</script>
+
+</body>
+</html>
